@@ -36,7 +36,7 @@ its contents.
 
 ```
 $ npm install
-$ node server.js <directory containing files to serve>
+$ node gopher.js -r <root file directory>
 ```
 
 ## Connecting
@@ -53,3 +53,7 @@ Escape character is '^]'.
 
 .Connection to 127.0.0.1 closed by foreign host.
 ```
+
+## Other
+This repository also includes an SMF manifest for running on illumos-based
+Unix distributions. That is located at `./gopher.xml`.

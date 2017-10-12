@@ -1,19 +1,16 @@
 {
   "name": "gopher",
   "version": "1.0.0",
-  "description": "gopher client/server libraries",
-  "main": "server.js",
+  "description": "gopher server",
+  "main": "gopher.js",
   "repository": {
-      "type": "git",
-      "url": "git+ssh://git@github.com:kodykantor/gopher.git"
+    "type": "git",
+    "url": "git+ssh://git@github.com:kodykantor/gopher.git"
   },
   "dependencies": {
-    "bunyan": "^1.8.10"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "artedi": "1.1.0",
+    "bunyan": "1.8.10",
+    "dashdash": "1.14.1"
   },
   "keywords": [
     "gopher"
