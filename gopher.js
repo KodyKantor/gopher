@@ -29,16 +29,14 @@ function Gopher() {
  * Wait for requests, and then act on them.
  */
 Gopher.prototype.serve = function serve() {
-    var request, entry, self;   /* Objects */
+    var my_request, entry, self;   /* Objects */
     self = this;
     mod_net.createServer(function (socket) {
-        LOG.info(socket, 'connection received');
+        LOG.info(socket.address(), 'connection received');
 
         function done(args) {
             self.request_counter.increment({
-                labels: {
-                    'request': args.request
-                }
+                'request': args.request
             });
 
             socket.end(args.data);
@@ -58,8 +56,8 @@ Gopher.prototype.serve = function serve() {
          * or find what the user is looking for.
          */
         socket.on('data', function (data) {
-            request = data.toString();
-            if (request === '\r\n') {
+            my_request = data.toString();
+            if (my_request === '\r\n') {
                 /* Display the root index. */
                 done({
                     'data': listDir(self.index),
@@ -69,39 +67,39 @@ Gopher.prototype.serve = function serve() {
             }
 
             /* Get the entry the user requested */
-            request = request.trim();
+            my_request = my_request.trim();
 
-            if (request === 'metrics') {
+            if (my_request === 'metrics') {
                 self.collector.collect(mod_artedi.FMT_PROM,
                     function (err, metrics) {
                         if (err) {
                             LOG.warn(err, 'error collecting metrics');
                             return;
                         }
-                        setImmediate(done({
+                        done({
                             'data': metrics,
-                            'request': request
-                        }));
+                            'request': my_request
+                        });
                 });
                 return;
             }
 
-            entry = getEntry(request, self.index);
-            if (entry.type === DIR) {
+            entry = getEntry(my_request, self.index);
+            if (entry === null) {
+                LOG.info('User requested unknown entry: %s', my_request);
+                done({
+                    'data': '\n.',
+                    'request': 'unknown'
+                });
+            } else if (entry.type === DIR) {
                 done({
                     'data': listDir(entry.listing),
-                    'request': request
+                    'request': my_request
                 });
             } else if (entry !== null) {
                 done({
                     'data': entry.content + '\n.',
-                    'request': request
-                });
-            } else {
-                LOG.info('User requested unknown entry: %s', request);
-                done({
-                    'data': '\n.',
-                    'request': 'unknown'
+                    'request': my_request
                 });
             }
 
